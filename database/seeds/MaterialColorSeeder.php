@@ -13,56 +13,56 @@ class MaterialColorSeeder extends Seeder
     {
       DB::table('material_colors')->insert([
          'parent_id' => '1',
-         'name'=> 'merah',
+         'color'=> 'merah',
          'stock' => '100',
      ]);
      DB::table('material_colors')->insert([
        'parent_id' => '1',
-       'name'=> 'biru',
+       'color'=> 'biru',
        'stock' => '50',
      ]);
      DB::table('material_colors')->insert([
       'parent_id' => '1',
-      'name'=> 'hitam',
+      'color'=> 'hitam',
       'stock' => '38',
     ]);
     DB::table('material_colors')->insert([
        'parent_id' => '1',
-       'name'=> 'Hijau',
+       'color'=> 'Hijau',
        'stock' => '123',
      ]);
      DB::table('material_colors')->insert([
         'parent_id' => '1',
-        'name'=> 'Krem',
+        'color'=> 'Krem',
         'stock' => '93',
      ]);
      DB::table('material_colors')->insert([
        'parent_id' => '2',
-       'name'=> 'biru',
+       'color'=> 'biru',
        'stock' => '38',
      ]);DB::table('material_colors')->insert([
         'parent_id' => '2',
-        'name'=> 'merah',
+        'color'=> 'merah',
         'stock' => '12',
     ]);
     DB::table('material_colors')->insert([
       'parent_id' => '2',
-      'name'=> 'biru',
+      'color'=> 'biru',
       'stock' => '48',
     ]);
     DB::table('material_colors')->insert([
      'parent_id' => '2',
-     'name'=> 'hitam',
+     'color'=> 'hitam',
      'stock' => '72',
    ]);
    DB::table('material_colors')->insert([
       'parent_id' => '2',
-      'name'=> 'Hijau',
+      'color'=> 'Hijau',
       'stock' => '18',
     ]);
     DB::table('material_colors')->insert([
        'parent_id' => '2',
-       'name'=> 'Krem',
+       'color'=> 'Krem',
        'stock' => '94',
     ]);
     }

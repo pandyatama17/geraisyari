@@ -13,6 +13,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/', function () {
+      return view('main');
+    });
+    Route::get('/main', function () {
+      return view('main');
+    });
+    Route::get('/store/inventory', 'MainController@storeInventory')->name('store_inventory');
+    Route::get('/store/sizing/{id}',[
+        'as'=>'size_details',
+        'uses'=> 'MainController@storeSizing'
+    ]);
+    Route::get('/production/inventory', 'MainController@productionInventory')->name('production_inventory');
+    Route::get('/production/order/{id}', 'MainController@showProductionOrder')->name('show_po');
+
 });
+Route::get('/override/sizing/{id}', 'MainController@storeSizing');
