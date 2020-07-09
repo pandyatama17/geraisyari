@@ -105,7 +105,7 @@
                       <i class="fa fa-cog fa-spin"></i> Mulai Produksi
                     </button>
                   @elseif($data->status == "2")
-                    <button type="button" id="finishProduction" class="btn btn-primary" data-code="{{$data->code}}" data-target="{{route('start_production',$data->id)}}">
+                    <button type="button" id="finishProduction" class="btn btn-primary" data-code="{{$data->code}}" data-target="{{route('inventory_out',$data->id)}}">
                       <i class="fa fa-flag-checkered"></i> Selesaikan Produksi
                     </button>
                   @endif
@@ -407,7 +407,7 @@
               <div class="col-12">
                 <table class="table table-bordered">
                   <tr>
-                    <th class="text-center text-white" style="background-color:black; line-height:7px">Deskripsi</th>
+                    <th class="text-center text-white" style="background-color:black; line-height:7px">Keterangan</th>
                   </tr>
                   <tr style="height:100px">
                     <td class="text-center">
@@ -424,5 +424,26 @@
         </div><!-- /.col -->
       </div><!-- /.row -->
     </div><!-- /.container-fluid -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="stockOutModal">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <form class="form" action="{{action('MainController@finishProduction')}}" id="stockOutForm" method="post">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Form Barang Keluar</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="stockOutContainer">
+
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" id="submitFinishProduction">Selesai Produksi</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </section>
 @endsection

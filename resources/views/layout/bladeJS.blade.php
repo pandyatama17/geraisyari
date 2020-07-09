@@ -424,5 +424,107 @@
 							}
 					});
 			});
+			$("#finishProduction").on('click',function()
+			{
+					var url = $(this).data('target');
+					$.ajax({
+						url : url,
+						type : 'GET',
+						dataType : 'html',
+						beforeSend: function()
+						{
+								$("#containerLoader").show(250);
+						},
+						success: function(data)
+						{
+								$("#stockOutModal").modal('show');
+								$('#stockOutContainer').html(data); // load response
+								$("#containerLoader").hide(250);
+						}
+					})
+			});
+			$("#stockOutForm").on('submit',function(e) {
+				e.preventDefault();
+				var form =$(this);
+				var data = form.formSerialize();
+				var action = form.attr('action');
+				var rows = $("#countRows").val();
+				var empty
+				var arrNumber = new Array();;
+				$.each($("input[type=number]"),function()
+				{
+					if ($(this).val() < 1)
+					{
+							empty = true;
+					}
+					else {
+						empty = false;
+					}
+				});
+				if (empty == true)
+				{
+						Swal.fire('Gagal','data tidak boleh kosong!','error');
+				}
+				else {
+					Swal.fire({
+						title: 'Terima Produksi Masuk',
+						html: 'Produksi &quot; &quot; akan dimulai. lanjutkan?',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Lanjutkan',
+						cancelButtonAriaLabel: 'Batal'
+					}).then(function(prompt)
+					{
+						if (prompt.value)
+						{
+							form.ajaxSubmit(
+							{
+								url:action,
+								type: 'POST',
+								data : data,
+								beforeSend: function()
+								{
+										$("#sectionLoader").show(250);
+								},
+								success : function(response)
+								{
+									var obj = $.parseJSON(response);
+									$("#sectionLoader").hide(250);
+									if(obj.error == true)
+									{
+											Swal.fire(
+												'Produksi Gagal Diselesaikan!',
+												obj.message,
+												'error'
+											);
+									}
+									else {
+										Swal.fire(
+											'Sukses',
+											'Produksi Berhasil Diselesaikan!',
+											'success'
+										).then(function (prompt)
+										{
+											if (prompt.value) {
+												window.location = obj.redirect;
+											}
+										});
+									}
+								},
+								error: function(xhr, status, error){
+									Swal.fire(
+										'Produksi Gagal Diselesaikan!',
+										'terjadi kesalahan pada server',
+										'error'
+									);
+									$("#sectionLoader").hide(250);
+								}
+							});
+						}
+					});
+				}
+			});
   });
 </script>

@@ -50,6 +50,8 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/production/load_po_details/{id}', 'MainController@loadPODetails')->name('get_po_details');
     Route::post('/production/receive/accept', 'MainController@acceptProduction')->name('accept_production');
     Route::get('/production/start/{id}', 'MainController@startProduction')->name('start_production');
+    Route::get('/production/inventory_out/{id}', 'MainController@inventoryOut')->name('inventory_out');
+    Route::post('/production/finish/', 'MainController@finishProduction')->name('finish_production');
 
     Route::get('/productions', 'MainController@showProductions')->name('show_productions');
     Route::get('/production/inventory', 'MainController@productionInventory')->name('production_inventory');

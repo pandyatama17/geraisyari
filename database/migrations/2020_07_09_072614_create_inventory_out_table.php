@@ -15,6 +15,9 @@ class CreateInventoryOutTable extends Migration
     {
         Schema::create('inventory_out', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('production_id');
+            $table->bigInteger('material_color_id');
+            $table->integer('stock_out');
             $table->timestamps();
         });
     }

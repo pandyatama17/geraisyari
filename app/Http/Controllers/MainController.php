@@ -459,4 +459,80 @@ class MainController extends Controller
     }
     echo json_encode($arr);
   }
+  public function inventoryOut($id)
+  {
+     $p = Production::find($id);
+     $colors = array();
+
+     if($p->order_id == 0)
+     {
+        $items = StoreInventory::where('production_id',$p->id)->get();
+        foreach ($items as $si)
+        {
+          $colors[] = \DB::table('materials as m')
+                       ->leftJoin('material_colors as mc', 'm.id','=','mc.parent_id')
+                       ->where('mc.id',$si->color)
+                       ->select('mc.*','m.name as material')
+                       ->get();
+        }
+     }
+     else {
+       $items = OrderDetail::where('parent_id',$p->order_id)->get();
+       foreach ($items as $od)
+       {
+         // $colors[] = MaterialColor::find($od->color);
+         $colors[] = \DB::table('materials as m')
+                      ->leftJoin('material_colors as mc', 'm.id','=','mc.parent_id')
+                      ->where('mc.id',$od->color)
+                      ->select('mc.*','m.name as material')
+                      ->get();
+       }
+     }
+     return view('layout.stockoutform')
+          ->with('data', $p)
+          ->with('items', $items)
+          ->with('colors', $colors);
+  }
+  public function finishProduction(Request $r)
+  {
+      $p = Production::find($r->id);
+      $p->status = "3";
+      $p->date_out = Carbon::now();
+
+      try {
+          $p->save();
+          $err = false;
+      }
+      catch (\Exception $e) {
+        $p->status = "3";
+        $p->date_out = Carbon::now();
+        $p->save();
+        $err = $e->getMessage();
+      }
+      for ($i=1; $i < $r->rows; $i++)
+      {
+          $item = MaterialColor::find($r->input('item_'.$i));
+          $oldstock = $item->stock;
+
+          $item->stock = ($oldstock - $r->input('stock_'.$i));
+          try {
+            $item->save();
+            $err = false;
+          }
+          catch (\Exception $e) {
+            $item->stock = $oldstock;
+            $item->save();
+            $err = $e->getMessage();
+          }
+      }
+      if($err == false)
+      {
+        $arr = ["error"=>false, "message"=>"success", "redirect"=>route("show_po",$r->id)];
+      }
+      else {
+        $arr = ["error"=>true, "message"=>$err, "redirect"=>route("show_po",$r->id)];
+      }
+      echo json_encode($arr);
+      // return $r;
+  }
 }
