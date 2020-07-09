@@ -1,4 +1,5 @@
 @extends('layout.wrapper')
+@section('title','Data Stok Barang')
 @section('content')
   <section class="content">
     <div class="container-fluid">

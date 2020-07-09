@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="card-body">
-      APELO
+      <h1 class="text-center">SELAMAT DATANG</h1>
     </div>
     <!-- /.card-body -->
     <div class="card-footer">

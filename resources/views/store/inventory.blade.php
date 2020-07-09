@@ -1,4 +1,5 @@
 @extends('layout.wrapper')
+@section('title','Data Stok Gudang')
 @section('content')
   <section class="content">
     <div class="container-fluid">
@@ -6,7 +7,7 @@
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Data Stok barang</h3>
+              <h3 class="card-title">Data Stok Gudang</h3>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
@@ -51,14 +52,14 @@
                       </td>
                       {{-- <td>{{$si->quantity}}</td> --}}
                       <td>
-                        @if($si->description != null)
-                          {{$si->description}}
+                        @if($si->notes != null)
+                          {{$si->notes}}
                         @else
                           <small><i class="text-gray disabled">Tidak ada catatan</i></small>
                         @endif
                       </td>
                       <td>
-                        &nbsp; 
+                        &nbsp;
                         <a href="/production/order/{{$si->production_id}}"class="text-info">
                           <i class="fa fa-receipt" data-toggle="tooltip" title="Lihat Surat Produksi" ></i>
                           | Surat Produksi

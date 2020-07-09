@@ -6,15 +6,15 @@
       <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
     </li>
     <li class="nav-item d-none d-sm-inline-block">
-      <a href="../../index3.html" class="nav-link">Home</a>
+      <a href="/" class="nav-link">Home</a>
     </li>
-    <li class="nav-item d-none d-sm-inline-block">
+    {{-- <li class="nav-item d-none d-sm-inline-block">
       <a href="#" class="nav-link">Contact</a>
-    </li>
+    </li> --}}
   </ul>
 
   <!-- SEARCH FORM -->
-  <form class="form-inline ml-3">
+  {{-- <form class="form-inline ml-3">
     <div class="input-group input-group-sm">
       <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
       <div class="input-group-append">
@@ -23,7 +23,7 @@
         </button>
       </div>
     </div>
-  </form>
+  </form> --}}
 
   <!-- Right navbar links -->
   <ul class="navbar-nav ml-auto">
@@ -91,240 +91,273 @@
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
-        <li class="nav-header">GUDANG</li>
+        @if (Auth::user()->level == "owner" || Auth::user()->level == "admin" )
+          <li class="nav-header">GUDANG</li>
+          <li class="nav-item">
+            <a href="{{route('store_inventory')}}" class="nav-link">
+              <i class="fa fa-tshirt nav-icon text-success"></i>
+              <p>Stok Gudang</p>
+            </a>
+          </li>
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-archive"></i>
+              <p>
+                Pemesanan
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{route('show_orders')}}" class="nav-link">
+                  <i class="fa fa-copy nav-icon"></i>
+                  <p>Semua Pemesanan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-hourglass nav-icon text-warning"></i>
+                  <p>Sedang Berlangsung</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('show_finished_orders')}}" class="nav-link">
+                  <i class="far fa-copy nav-icon text-success"></i>
+                  <p>Telah Selesai</p>
+                </a>
+              </li>
+              {{-- <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-book nav-icon text-cyan"></i>
+                  <p>
+                    Data Pemesanan
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+
+                </ul> --}}
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-plus nav-icon text-primary"></i>
+                  <p>Pemesanan Baru</p>
+                </a>
+              </li>
+              {{-- <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-check nav-icon"></i>
+                  <p>Validasi Pemesanan</p>
+                </a>
+              </li> --}}
+            </ul>
+          </li>
+          {{-- <li class="nav-item">
+            <a href="https://adminlte.io/docs/3.0" class="nav-link">
+              <i class="nav-icon fas fa-book-open text-info"></i>
+              <p>Laporan Penjualan</p>
+            </a> --}}
+          </li>
+        @endif
+        @if (Auth::user()->level == "owner" || Auth::user()->level == "production" )
+          <li class="nav-header">PRODUKSI</li>
+          @if (Auth::user()->level == "owner")
+            <li class="nav-item">
+              <a href="{!! route('new_production') !!}" class="nav-link">
+                <i class="fa fa-file-medical nav-icon text-primary"></i>
+                <p>Tambah Produksi Masuk</p>
+              </a>
+            </li>
+          @endif
+          @php
+            $count_prod = count(\DB::table('productions')->where('status','0')->get());
+          @endphp
+          @if ($count_prod > 0)
+            <li class="nav-item">
+              <a href="{{route('receive_production_form')}}" class="nav-link">
+                {{-- <i class="fas fa-spinner fa-spin nav-icon text-warning"></i> --}}
+                <i class="fa fa-file-download vert-move nav-icon text-warning"></i>
+                <p>Terima Produksi Masuk</p>
+                <span class="right badge badge-danger">{{$count_prod}}</span>
+              </a>
+            </li>
+          @endif
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-industry text-orange"></i>
+              <p>
+                Produksi
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-book nav-icon text-cyan"></i>
+                  <p>
+                    Data Produksi
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{route('show_productions')}}" class="nav-link">
+                      <i class="fa fa-copy nav-icon"></i>
+                      <p>Semua Produksi</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-hourglass nav-icon text-info"></i>
+                      <p>Sedang Berlangsung</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-copy nav-icon text-success"></i>
+                      <p>Telah Selesai</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-warehouse text-yellow"></i>
+              <p>
+                Gudang Produksi
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{route('production_inventory')}}" class="nav-link">
+                  <i class="fa fa-book nav-icon text-success"></i>
+                  <p>Data Stok Bahan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-plus nav-icon text-primary"></i>
+                  <p>Restock Barang</p>
+                </a>
+              </li>
+              <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-book nav-icon text-cyan"></i>
+                  <p>
+                    Laporan Gudang
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="fa fa-download nav-icon"></i>
+                      <p>Laporan Bahan Masuk</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="fa fa-upload nav-icon"></i>
+                      <p>Laporan Bahan Keluar</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        @endif
+        @if (Auth::user()->level == "owner" )
+          <li class="nav-header">ADMIN <i class="fa fa-cogs nav-icon"></i></li>
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Karyawan
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-user-alt nav-icon"></i>
+                  <p>Data Karyawan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-user nav-icon"></i>
+                  <p>Data Penjahit</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-user-plus nav-icon"></i>
+                  <p>Daftar Karyawan Baru</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-sitemap"></i>
+              <p>
+                Toko dan Reseller
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-home nav-icon"></i>
+                  <p>Data Toko</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-plus nav-icon"></i>
+                  <p>Tambah Toko</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-handshake nav-icon"></i>
+                  <p>Data Reseller</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa fa-plus nav-icon"></i>
+                  <p>Tambah Reseller</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        @endif
+        <li class="nav-header">AKUN <i class="fa fa-user nav-icon"></i></li>
         <li class="nav-item">
-          <a href="{{route('store_inventory')}}" class="nav-link">
-            <i class="fa fa-tshirt nav-icon text-success"></i>
-            <p>Stok Gudang</p>
-          </a>
-        </li>
-        <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-archive text-warning"></i>
-            <p>
-              Pemesanan
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item has-treeview">
-              <a href="#" class="nav-link">
-                <i class="fa fa-book nav-icon text-cyan"></i>
-                <p>
-                  Data Pemesanan
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="fa fa-copy nav-icon"></i>
-                    <p>Semua Pemesanan</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="far fa-hourglass nav-icon text-info"></i>
-                    <p>Sedang Berlangsung</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="far fa-copy nav-icon text-success"></i>
-                    <p>Telah Selesai</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-plus nav-icon text-primary"></i>
-                <p>Pemesanan Baru</p>
-              </a>
-            </li>
-            {{-- <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-check nav-icon"></i>
-                <p>Validasi Pemesanan</p>
-              </a>
-            </li> --}}
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a href="https://adminlte.io/docs/3.0" class="nav-link">
-            <i class="nav-icon fas fa-book-open text-info"></i>
-            <p>Laporan Penjualan</p>
-          </a>
-        </li>
-        <li class="nav-header">PRODUKSI</li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fa fa-file-medical nav-icon text-primary"></i>
-            <p>Tambah Produksi Masuk</p>
+            <i class="fa fa-cog nav-icon "></i>
+            <p>Pengaturan Akun</p>
           </a>
         </li>
         <li class="nav-item">
-          <a href="#" class="nav-link">
-            {{-- <i class="fas fa-spinner fa-spin nav-icon text-warning"></i> --}}
-            <i class="fa fa-file-download vert-move nav-icon text-warning"></i>
-            <p>Terima Produksi Masuk</p>
-            <span class="right badge badge-danger">1</span>
+          <a href="{{ route('logout') }}"
+             onclick="event.preventDefault();
+                           document.getElementById('logout-form').submit();" class="nav-link">
+            <i class="fa fa-sign-out-alt nav-icon"></i>
+            <p>Keluar</p>
           </a>
         </li>
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-industry text-orange"></i>
-            <p>
-              Produksi
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item has-treeview">
-              <a href="#" class="nav-link">
-                <i class="fa fa-book nav-icon text-cyan"></i>
-                <p>
-                  Data Produksi
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="fa fa-copy nav-icon"></i>
-                    <p>Semua Produksi</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="far fa-hourglass nav-icon text-info"></i>
-                    <p>Sedang Berlangsung</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="far fa-copy nav-icon text-success"></i>
-                    <p>Telah Selesai</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-warehouse text-yellow"></i>
-            <p>
-              Gudang Produksi
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="{{route('production_inventory')}}" class="nav-link">
-                <i class="fa fa-book nav-icon text-success"></i>
-                <p>Data Stok Bahan</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-plus nav-icon text-primary"></i>
-                <p>Restock Barang</p>
-              </a>
-            </li>
-            <li class="nav-item has-treeview">
-              <a href="#" class="nav-link">
-                <i class="fa fa-book nav-icon text-cyan"></i>
-                <p>
-                  Laporan Gudang
-                  <i class="right fas fa-angle-left"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="fa fa-download nav-icon"></i>
-                    <p>Laporan Bahan Masuk</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="fa fa-upload nav-icon"></i>
-                    <p>Laporan Bahan Keluar</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-header">ADMIN <i class="fa fa-cogs nav-icon"></i></li>
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-users"></i>
-            <p>
-              Karyawan
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-user-alt nav-icon"></i>
-                <p>Data Karyawan</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-user nav-icon"></i>
-                <p>Data Penjahit</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-user-plus nav-icon"></i>
-                <p>Daftar Karyawan Baru</p>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-sitemap"></i>
-            <p>
-              Toko dan Reseller
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-home nav-icon"></i>
-                <p>Data Toko</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-plus nav-icon"></i>
-                <p>Tambah Toko</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-handshake nav-icon"></i>
-                <p>Data Reseller</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="fa fa-plus nav-icon"></i>
-                <p>Tambah Reseller</p>
-              </a>
-            </li>
-          </ul>
-        </li>
+
       </ul>
     </nav>
     <!-- /.sidebar-menu -->
   </div>
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+      @csrf
+  </form>
   <!-- /.sidebar -->
 </aside>
