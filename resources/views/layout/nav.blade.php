@@ -28,7 +28,7 @@
   <!-- Right navbar links -->
   <ul class="navbar-nav ml-auto">
     <!-- Notifications Dropdown Menu -->
-    <li class="nav-item dropdown">
+    {{-- <li class="nav-item dropdown">
       <a class="nav-link" data-toggle="dropdown" href="#">
         <i class="far fa-bell"></i>
         <span class="badge badge-warning navbar-badge">15</span>
@@ -53,7 +53,7 @@
         <div class="dropdown-divider"></div>
         <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
       </div>
-    </li>
+    </li> --}}
     <!-- <li class="nav-item">
       <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
         <i class="fas fa-th-large"></i>
@@ -92,18 +92,18 @@
         <!-- Add icons to the links using the .nav-icon class
              with font-awesome or any other icon font library -->
         @if (Auth::user()->level == "owner" || Auth::user()->level == "admin" )
-          <li class="nav-header">GUDANG</li>
+          <li class="nav-header">Toko</li>
           <li class="nav-item">
             <a href="{{route('store_inventory')}}" class="nav-link">
               <i class="fa fa-tshirt nav-icon text-success"></i>
-              <p>Stok Gudang</p>
+              <p>Stok Toko</p>
             </a>
           </li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-archive"></i>
               <p>
-                Pemesanan
+                Pemesanan (PO)
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -139,7 +139,7 @@
                 </ul> --}}
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{!! route('new_order') !!}" class="nav-link">
                   <i class="fa fa-plus nav-icon text-primary"></i>
                   <p>Pemesanan Baru</p>
                 </a>
@@ -159,9 +159,9 @@
             </a> --}}
           </li>
         @endif
-        @if (Auth::user()->level == "owner" || Auth::user()->level == "production" )
+        @if (Auth::user()->level == "owner" || Auth::user()->level == "production" || Auth::user()->level == "admin" )
           <li class="nav-header">PRODUKSI</li>
-          @if (Auth::user()->level == "owner")
+          @if (Auth::user()->level == "owner" || Auth::user()->level == "admin")
             <li class="nav-item">
               <a href="{!! route('new_production') !!}" class="nav-link">
                 <i class="fa fa-file-medical nav-icon text-primary"></i>
@@ -172,6 +172,7 @@
           @php
             $count_prod = count(\DB::table('productions')->where('status','0')->get());
           @endphp
+          @if (Auth::user()->level == "owner" || Auth::user()->level == "production" )
           @if ($count_prod > 0)
             <li class="nav-item">
               <a href="{{route('receive_production_form')}}" class="nav-link">
@@ -186,7 +187,7 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-industry text-orange"></i>
               <p>
-                Produksi
+                Produksi (PR)
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -269,8 +270,9 @@
             </ul>
           </li>
         @endif
+        @endif
         @if (Auth::user()->level == "owner" )
-          <li class="nav-header">ADMIN <i class="fa fa-cogs nav-icon"></i></li>
+          <li class="nav-header">SUPER ADMIN <i class="fa fa-cogs nav-icon"></i></li>
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>

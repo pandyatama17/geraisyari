@@ -39,7 +39,7 @@
                   {{-- <input type="hidden" name="handler" value="" id="kindColReal"> --}}
                   <input type="text" class="form-control" disabled value="" id="kindCol">
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                   <label for="">Pelaksana Produksi</label>
                   <select class="form-control select2" name="tailor" id="tailorSelect">
                     <option selected disabled value="0">Pilih Penjahit ....</option>
@@ -47,10 +47,10 @@
                       <option value="{{$t->id}}">{{$t->name}}</option>
                     @endforeach
                   </select>
-                </div>
+                </div> --}}
               </div>
               <div class="card-footer">
-                <button type="submit" class="btn btn-success" id="receiveSubmit" disabled>Terima Produksi</button>
+                <button type="submit" class="btn btn-success" id="receiveSubmit">Terima Produksi</button>
               </div>
             </div>
           </form>

@@ -17,10 +17,22 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
+        @if($data->status == "0")
+          <div class="callout callout-danger">
+            <h5><i class="fa fa-exclamation-triangle"></i> Note:</h5>
+            produksi belum diterima. silahkan terima produksi terlebih dahulu.
+          </div>
+        @elseif($data->status == "1")
+          <div class="callout callout-warning">
+            <h5><i class="fa fa-exclamation"></i> Note:</h5>
+            produksi belum dimulai. silahkan mulai produksi terlebih dahulu untuk dapat mencetak surat produksi.
+          </div>
+        @elseif($data->status == "2")
           <div class="callout callout-info">
             <h5><i class="fas fa-info"></i> Note:</h5>
-            This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
+            silahkan klik tombol print dibawah detail produksi untuk mencetak surat produksi ini.
           </div>
+        @endif
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12">
           <div class="card card-primary">
@@ -54,7 +66,7 @@
                     {{-- @endif --}}
                   </tr>
                   <tr>
-                    <td>Pelaku Produksi</td><td>:</td>
+                    <td>Penjahit</td><td>:</td>
                     @if($data->tailor == null)
                       <td>-</td>
                     @else
@@ -124,7 +136,14 @@
             <div class="row">
               <div class="col-12">
                 <h2 class="text-center">
-                  Surat Produksi
+                  @switch($data->kind)
+                    @case('new')
+                      Surat Produksi
+                      @break
+                    @case('resew')
+                      Surat Vermak
+                      @break
+                  @endswitch
                   <small class="float-right" style="font-size:10pt">No. : {{$data->code}}</small>
                 </h2>
                 <hr>

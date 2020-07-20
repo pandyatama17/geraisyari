@@ -19,22 +19,8 @@
                 <div class="card-body">
                   <div class="form-group">
                     <label for="typeSelect">Tujuan Produksi</label>
-                    {{-- <div class="row">
-                      <div class="col-12">
-                        <div class="icheck-primary d-inline">
-                          <input type="radio" value="1" class="icheck" id="typeOption1"name="typeSelect">
-                          <label style="font-weight:500;" for="typeOption1">Produksi Pemesanan</label>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="icheck-primary d-inline">
-                          <input type="radio" value="2" class="icheck" id="typeOption2"name="typeSelect">
-                          <label style="font-weight:500;" for="typeOption2">Produksi Stok Gudang</label>
-                        </div>
-                      </div>
-                    </div> --}}
                     <select class="form-control" name="prod_type" id="typeSelect">
-                      <option selected disabled>pilih tujuan produksi...</option>
+                      <option selected disabled value="0">pilih tujuan produksi...</option>
                       <option value="1">Produksi atas Pemesanan</option>
                       <option value="2">Produksi Stok Gudang</option>
                     </select>
@@ -43,24 +29,24 @@
                     <div class="form-group">
                       <label for="orderSelect">Pilih Pesanan</label>
                       <select class="form-control" name="order" id="orderSelect">
-                        <option selected disabled>pilih pesanan untuk produksi...</option>
+                        <option selected disabled value="0">pilih pesanan untuk produksi...</option>
                         @foreach ($orders as $o)
                           <option value="{{$o->id}}">{{$o->code}}</option>
                         @endforeach
                       </select>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="pic">Penanggung Jawab</label>
-                    <input type="text" class="form-control" id="pic" value="{{Auth::user()->name}}" disabled>
-                  </div>
                   <div class="form-group" id="kindContainer">
                     <label for="kind">Jenis Produksi</label>
                     <select class="form-control" name="kind" id="kindSelect">
                       <option selected disabled value="0">pilih jenis produksi...</option>
-                      <option value="new">Jahit Baru</option>
-                      <option value="resew">Vermak</option>
+                      <option value="new">Jahit Baru (PR)</option>
+                      <option value="resew">Vermak (VR)</option>
                     </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="pic">Penanggung Jawab</label>
+                    <input type="text" class="form-control" id="pic" value="{{Auth::user()->name}}" disabled>
                   </div>
                   <div class="form-group" id="sizeContainer" style="display:none">
                     <label>Ukuran</label>
@@ -300,6 +286,7 @@
           </div>
           <div id="itemFormContainer"></div>
           <input type="hidden" name="rows" id="countItems" value="1">
+          <input type="hidden" name="prod_kind" id="prodKind" value="1">
         </div>
       </div>
     </div>

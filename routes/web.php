@@ -27,17 +27,17 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/main', function () {
       return view('main');
     });
-    Route::get('/store/inventory', 'MainController@showStoreInventory')->name('store_inventory');
-    Route::get('/store/sizing/{id}',[
-        'as'=>'size_details',
-        'uses'=> 'MainController@storeSizing'
-    ]);
     Route::get('/order/client/{id}',[
         'as'=>'order_client_details',
         'uses'=> 'MainController@orderClient'
     ]);
+
+    // Store
+    Route::get('/store/inventory', 'MainController@showStoreInventory')->name('store_inventory');
+    Route::get('/store/sizing/{id}','MainController@storeSizing')->name('size_details');
     Route::get('/store/orders', 'MainController@showOrders')->name('show_orders');
     Route::get('/store/orders/finished', 'MainController@showFinishedOrders')->name('show_finished_orders');
+    Route::get('/store/order/new','MainController@createOrder')->name('new_order');
 
     // production
     Route::get('/production/new', 'MainController@newProduction')->name('new_production');
@@ -52,10 +52,10 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/production/start/{id}', 'MainController@startProduction')->name('start_production');
     Route::get('/production/inventory_out/{id}', 'MainController@inventoryOut')->name('inventory_out');
     Route::post('/production/finish/', 'MainController@finishProduction')->name('finish_production');
-
     Route::get('/productions', 'MainController@showProductions')->name('show_productions');
     Route::get('/production/inventory', 'MainController@productionInventory')->name('production_inventory');
     Route::get('/production/order/{id}', 'MainController@showProductionOrder')->name('show_po');
+
 
 });
 Route::get('/override/sizing/{id}', 'MainController@storeSizing');

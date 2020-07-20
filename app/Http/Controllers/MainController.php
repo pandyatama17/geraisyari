@@ -14,6 +14,8 @@ use App\Sizing;
 use App\AvailableColors;
 use App\Tailor;
 use App\User;
+use App\Reseller;
+
 use Carbon\Carbon;
 
 class MainController extends Controller
@@ -37,7 +39,7 @@ class MainController extends Controller
   {
     $query = \DB::table('orders as o')
         ->where('o.id', '>', 0)
-        ->where('o.status', '3')
+        ->where('o.production_status', '3')
         ->leftJoin('productions as p', 'p.order_id', '=', 'o.id')
         ->leftJoin('resellers as rs', 'o.reseller_id', '=', 'rs.id')
         ->select('o.*','p.code as production_code','p.id as production_id','rs.name as reseller_name', 'rs.phone as reseller_phone')
@@ -165,7 +167,7 @@ class MainController extends Controller
   public function newProduction()
   {
     $form_method = "Tambah";
-    $orders = Order::where('id', '>', 0)->where('status', '0')->get();
+    $orders = Order::where('id', '>', 0)->where('production_status', '0')->get();
     $models = Models::all();
     $materials = Material::all();
     $colors = AvailableColors::all();
@@ -219,10 +221,19 @@ class MainController extends Controller
   }
   public function saveProduction(Request $r)
   {
+    // dd($r);
     $action = $r->prod_type;
     $latest = Production::orderBy('id', 'DESC')->first();
-    $generated = "P".sprintf("%04d", ($latest->id+1));
-    // dd($r);
+    switch ($r->prod_kind)
+    {
+      case 'new':
+        $kind = 'PR';
+        break;
+      case 'resew':
+        $kind = 'VR';
+        break;
+    }
+    $generated = $kind.sprintf("%04d", ($latest->id+1));
     switch ($action)
     {
       case 1:
@@ -241,7 +252,7 @@ class MainController extends Controller
         {
           $p->save();
           $o->save();
-          $arr = ["error"=>false, "message"=>"success", "redirect"=>route("show_po",$p->id)];
+          $arr = ["error"=>false, "message"=>"produksi ".$generated." Berhasil Dibuat!", "redirect"=>route("show_po",$p->id)];
         }
         catch (\Exception $e)
         {
@@ -338,7 +349,7 @@ class MainController extends Controller
         }
         if ($messages['prod'] == 'saved')
         {
-          $arr = ["error"=>false, "message"=>"success", "redirect"=>route("show_po",$p->id)];
+          $arr = ["error"=>false, "message"=>"produksi ".$generated." Berhasil Dibuat!", "redirect"=>route("show_po",$p->id)];
         }
         else
         {
@@ -431,7 +442,7 @@ class MainController extends Controller
       $p = Production::find($r->id);
       $date = Carbon::now();
       $p->handler = $r->handler;
-      $p->tailor = $r->tailor;
+      // $p->tailor = $r->tailor;
       $p->status = '1';
       $p->date_in = $date->format('Y-m-d');
 
@@ -534,5 +545,12 @@ class MainController extends Controller
       }
       echo json_encode($arr);
       // return $r;
+  }
+  public function createOrder()
+  {
+    $rs = Reseller::all();
+    
+    return view('store.form')
+    ->with('resellers', $rs);
   }
 }

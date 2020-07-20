@@ -107,6 +107,10 @@
 			});
 			$("#containerLoader").hide();
 			$("#sectionLoader").hide(2500);
+			$("#kindSelect").on('change',function(e)
+			{
+					$("#prodKind").val($(this).val());
+			});
 			$("#typeSelect").on('change',function(e)
 			{
 					var action = parseInt($(this).val());
@@ -114,17 +118,25 @@
 					{
 						case 1:
 								$('#prodByOrder').slideDown();
+								$("#orderSelect").val("0").change();
 								$('#sizeContainer').slideUp();
-								$('#itemFormContainer').html(''); // load response
 								$("#customSizeCard").slideUp();
+								$('#kindSelect option:contains("pilih jenis produksi...")').text('pilih pesanan untuk produksi...');
+								// $("#kindSelect").val("0").text("pilih pesanan untuk produksi...");
+								$("#kindSelect").prop('disabled',true);
 								$("#radioPrimary1").iCheck('toggle');
+								$('#itemFormContainer').html(''); // load response
+
 							break;
 						case 2:
 								$("#countItems").val('0');
 								$('#prodByOrder').slideUp();
 								$('#sizeContainer').slideDown();
 								$("#notes").val('');
+								// $("#kindSelect").val("0").text("pilih jenis produksi...");
+								$('#kindSelect option:contains("pilih pesanan untuk produksi...")').text('pilih jenis produksi...');
 								$("#kindSelect").val("0").change();
+								$("#kindSelect").prop('disabled',false);
 								$('#itemFormContainer').html(''); // load response
 								newItem();
 								break;
@@ -135,36 +147,44 @@
 					var order_id = $(this).val();
 					var order = "/production/load_order/" + order_id;
 					var notes = "/production/load_order_notes/" + order_id;
-					$.ajax({
+					// alert(order_id);
+					if (order_id != null)
+					{
+						$.ajax({
 							url: notes,
 							type: 'GET',
 							dataType: 'json',
 							beforeSend: function()
 							{
-              		// $("#containerLoader").show(250);
-           		},
+								// $("#containerLoader").show(250);
+							},
 							success: function(data)
 							{
-									$("#notes").val(data.notes);
-									$("#kindSelect").val(data.kind).change();
+								$("#notes").val(data.notes);
+								$("#kindSelect").val(data.kind).change();
+								$("#prodKind").val(data.kind);
 							}
 						});
-					$.ajax({
+						$.ajax({
 							url: order,
 							type: 'GET',
 							dataType: 'html',
 							beforeSend: function()
 							{
-              		$("#containerLoader").show(250);
-           		},
+								$("#containerLoader").show(250);
+							},
 							success: function(data)
 							{
-									$('#itemFormContainer').html(''); // load response
-									$('#itemFormContainer').append(data); // load response
-									// $('#itemFormContainer').append('<div class="col-12 bg-white" style="padding:10px; border-radius:5px"><button type="button" class="btn btn-success" id="submitProductionOrder" >Submit</button></div>'); // load response
-									$("#containerLoader").hide(250);
+								$('#itemFormContainer').html(''); // load response
+								$('#itemFormContainer').append(data); // load response
+								// $('#itemFormContainer').append('<div class="col-12 bg-white" style="padding:10px; border-radius:5px"><button type="button" class="btn btn-success" id="submitProductionOrder" >Submit</button></div>'); // load response
+								$("#containerLoader").hide(250);
 							}
 						});
+					}
+					else {
+						$('#itemFormContainer').html('');
+					}
 			});
 			$("body").on('submit', '#productionForm', function(event)
 			{
@@ -221,7 +241,7 @@
 										else {
 											Swal.fire(
 												'Sukses',
-												'Produksi Berhasil Dibuat!',
+												obj.message,
 												'success'
 											).then(function (prompt)
 											{
@@ -525,6 +545,21 @@
 						}
 					});
 				}
+			});
+			$('input[name=order_type]').on('ifChanged', function(event)
+			{
+				 var type = $(this).val();
+				 switch (type) {
+				 	case '0':
+						$("#resellerOrder").slideUp();
+						$("#individualOrder").slideDown();
+						$("#resellerSelect").val('0').change();
+				 		break;
+				 	case '1':
+						$("#individualOrder").slideUp();
+						$("#resellerOrder").slideDown();
+						break;
+				 }
 			});
   });
 </script>

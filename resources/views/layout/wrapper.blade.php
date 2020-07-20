@@ -91,8 +91,7 @@
 <script src="{{asset('/jquery.form.min.js')}}" charset="utf-8"></script>
 <!-- AdminLTE App -->
 <script src="{{asset('alt/dist/js/adminlte.min.js')}}"></script>
-<!-- AdminLTE for demo purposes -->
-{{-- <script src="{{asset('alt/dist/js/demo.js')}}"></script> --}}
+<!--jQuery Pluugins -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/printThis/1.15.0/printThis.min.js"></script>
 @include('layout.bladeJS')

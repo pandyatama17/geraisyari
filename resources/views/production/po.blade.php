@@ -3,7 +3,14 @@
   <div class="row">
     <div class="col-12">
       <h2 class="text-center">
-        Surat Produksi
+        @switch($data->kind)
+          @case('new')
+            Surat Produksi
+            @break
+          @case('resew')
+            Surat Vermak
+            @break
+        @endswitch
         <small class="float-right" style="font-size:10pt">No. : {{$data->code}}</small>
       </h2>
       <hr>

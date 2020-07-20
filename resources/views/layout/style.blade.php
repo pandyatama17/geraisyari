@@ -48,4 +48,9 @@
 {
   background-color: #2283c3;
 }
+.phone::-webkit-inner-spin-button, 
+.phone::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+  margin: 0;
+}
 </style>

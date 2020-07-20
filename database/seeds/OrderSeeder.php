@@ -17,10 +17,10 @@ class OrderSeeder extends Seeder
           //   'client_name' => 'Stok Toko',
           // ]);
           DB::table('orders')->insert([
-            'code' => 'O0003',
-            'client_name' => 'Suparmin',
+            'code' => 'O0005',
+            'client_name' => 'Parjo Ganteng',
             'client_phone' => '1239823',
-            'notes' => 'jangan pake mie kuning',
+            'notes' => 'tolong pakai karet di tangan',
             'pic' => 1,
           ]);
           DB::table('order_details')->insert([
@@ -56,7 +56,7 @@ class OrderSeeder extends Seeder
       //     'address' => 'jl. batuk pilek'
       // ]);
        DB::table('orders')->insert([
-          'code' => 'O0004',
+          'code' => 'O0006',
           'reseller' => 1,
           'reseller_id' => '2',
           'notes' => 'baksonya urat aja bang. gapapa dikit',
