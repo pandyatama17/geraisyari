@@ -38,6 +38,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/store/orders', 'MainController@showOrders')->name('show_orders');
     Route::get('/store/orders/finished', 'MainController@showFinishedOrders')->name('show_finished_orders');
     Route::get('/store/order/new','MainController@createOrder')->name('new_order');
+    Route::get('/store/new_item/{row}', 'MainController@storeItemForm')->name('order_item_form');
+    Route::get('/store/loadstoreinventory', 'MainController@orderFromStock')->name('order_from_stock');
+    Route::post('/store/order/store', 'MainController@storeOrder')->name('save_order');
 
     // production
     Route::get('/production/new', 'MainController@newProduction')->name('new_production');

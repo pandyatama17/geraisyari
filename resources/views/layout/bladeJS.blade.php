@@ -6,6 +6,9 @@
 		});
 </script>
 <script>
+$(document).on("wheel", "input[type=number]", function (e) {
+    $(this).blur();
+});
   $(function ()
   {
       $('[data-toggle="tooltip"]').tooltip();
@@ -56,11 +59,14 @@
 				 	{
 							$('.custom-chk').addClass('active');
 							$("#customSizeCard").slideDown();
+							$("#order-form").slideUp();
 				 	}
 				 	else
 				 	{
 							$('.custom-chk').removeClass('active');
+							$("#customSizeCard :input").val("");
 							$("#customSizeCard").slideUp();
+							$("#order-form").slideDown();
 				 	}
 			});
 
@@ -69,7 +75,13 @@
 			{
 				var count = parseInt($("#countItems").val());
 				var next = count + 1;
-				var url = "/production/new_item/" + next;
+				if (top.location.pathname === '/store/order/new')
+				{
+					var url = "/store/new_item/" + next;
+				}
+				else {
+					var url = "/production/new_item/" + next;
+				}
 
 				$("#footer_"+count).remove();
 				$("#countItems").val(next);
@@ -102,7 +114,7 @@
 				}
 				else
 				{
-						$("#itemContainer_"+next).append('<div class="card-footer" id="footer_'+next+'"><button type="button" class="btn btn-danger" id="removeItem"><i class="fa fa-minus"></i></button>&nbsp;<button type="button" class="btn btn-info" id="addNewItem"><i class="fa fa-plus"></i></button>&nbsp;<button type="button" id="submitProductionOrder" class="btn btn-success">Submit</button></div>');
+						$("#itemContainer_"+next).append('<div class="card-footer" id="footer_'+next+'"><button type="button" class="btn btn-danger" id="removeItem"><i class="fa fa-minus"></i> Hapus Barang</button>&nbsp;<button type="button" class="btn btn-info" id="addNewItem"><i class="fa fa-plus"></i></button>&nbsp;<button type="button" id="submitProductionOrder" class="btn btn-success"><i class="fa fa-check"></i> SelesaiSubmit</button></div>');
 				}
 			});
 			$("#containerLoader").hide();
@@ -126,7 +138,9 @@
 								$("#kindSelect").prop('disabled',true);
 								$("#radioPrimary1").iCheck('toggle');
 								$('#itemFormContainer').html(''); // load response
-
+								$("#storeSelectContainer").slideUp();
+								$("#storeRadio_1").iCheck('uncheck');
+								$("#storeRadio_2").iCheck('uncheck');
 							break;
 						case 2:
 								$("#countItems").val('0');
@@ -138,6 +152,7 @@
 								$("#kindSelect").val("0").change();
 								$("#kindSelect").prop('disabled',false);
 								$('#itemFormContainer').html(''); // load response
+								$("#storeSelectContainer").slideDown();
 								newItem();
 								break;
 					}
@@ -147,6 +162,7 @@
 					var order_id = $(this).val();
 					var order = "/production/load_order/" + order_id;
 					var notes = "/production/load_order_notes/" + order_id;
+					var kind;
 					// alert(order_id);
 					if (order_id != null)
 					{
@@ -160,9 +176,17 @@
 							},
 							success: function(data)
 							{
+								switch (data.kind) {
+									case 'PO':
+										kind = 'PR';
+										break;
+									case 'OV':
+										kind = 'VR';
+										break;
+								}
 								$("#notes").val(data.notes);
-								$("#kindSelect").val(data.kind).change();
-								$("#prodKind").val(data.kind);
+								$("#kindSelect").val(kind).change();
+								$("#prodKind").val(kind);
 							}
 						});
 						$.ajax({
@@ -557,9 +581,140 @@
 				 		break;
 				 	case '1':
 						$("#individualOrder").slideUp();
+						$("#individualOrder input").val("");
 						$("#resellerOrder").slideDown();
 						break;
 				 }
+			});
+			if (top.location.pathname === '/store/order/new')
+			{
+				$("#itemCartContainer").hide();
+				newItem();
+			}
+			$("#orderKindSelect").on('change',function()
+			{
+					var action = parseInt($(this).val());
+					var previousValue = $(this).data('previousValue');
+					switch (action) {
+						case 0:
+							// alert('OR');
+							$("#countItems").val('0');
+							$.ajax({
+									url: '/store/loadstoreinventory',
+									type: 'GET',
+									dataType: 'html',
+									beforeSend: function()
+									{
+											$("#containerLoader").show(250);
+											$('input[name=custom_sizing]').iCheck('uncheck');
+											$("#customSizeBtn").slideUp();
+									},
+									success: function(response)
+									{
+										$("#itemFormContainer").html(response);
+										$("#containerLoader").hide(250);
+										$("#sizeContainer").slideUp();
+
+									}
+								});
+							break;
+						case 1:
+						case 2:
+							// alert('PO');
+							if (previousValue < 1 )
+							{
+								$("#countItems").val('0');
+								$("#customSizeBtn").slideDown();
+								$("#cart").html("");
+								$("#itemCartContainer").slideUp();
+								$("#itemFormContainer").html('');
+								$("#sizeContainer").slideDown();
+								newItem();
+							}
+							break;
+						default:
+					}
+					$(this).data('previousValue',action);
+			});
+			$("#closeSizeContainer").on('click',function()
+			{
+				$("#customSizeCard").slideUp();
+				$("#order-form").slideDown();
+			});
+			$(".custom-chk").on('click',function()
+			{
+				if ($(this).hasClass('active'))
+				{
+					$("#customSizeCard").slideDown();
+					$("#order-form").slideUp();
+				}
+				else {
+					$('input[name=custom_sizing]').iCheck('check');
+				}
+			});
+			$("body").on('submit', '#orderForm', function(event)
+			{
+					event.preventDefault();
+					var form = $(this);
+					var action  = form.attr('action');
+					var data = form.formSerialize();
+					console.log(action);
+					Swal.fire({
+							title: 'Form Pemesanan',
+							text: "pemesanan akan dibuat berdasarkan data ini. Lanjutkan?",
+							icon: 'warning',
+							showCancelButton: true,
+							confirmButtonColor: '#3085d6',
+							cancelButtonColor: '#d33',
+							confirmButtonText: "Ya",
+							cancelButtonAriaLabel: 'Batal'
+					}).then((result) =>
+					{
+							if (result.value)
+							{
+								form.ajaxSubmit({
+									url:action,
+									type: 'POST',
+									data : data,
+									beforeSend: function()
+									{
+		              		$("#sectionLoader").show(250);
+		           		},
+									success : function(response)
+									{
+										$("#sectionLoader").hide(250);
+										var obj = $.parseJSON(response);
+										if(obj.error == true)
+										{
+												Swal.fire(
+													'Pemesanan Gagal Dibuat!',
+													obj.message,
+													'error'
+												);
+										}
+										else {
+											Swal.fire(
+												'Sukses',
+												obj.message,
+												'success'
+											).then(function (prompt)
+											{
+											  // if (prompt.value) {
+											  //   window.location = obj.redirect;
+											  // }
+											});
+										}
+									},error: function(e){
+										Swal.fire(
+											'Pemesanan Gagal Dibuat!',
+											'terjadi kesalahan pada server!',
+											'error'
+										);
+										$("#sectionLoader").hide(250);
+									}
+								});
+							}
+					})
 			});
   });
 </script>

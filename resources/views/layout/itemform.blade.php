@@ -1,10 +1,30 @@
-<div class="card card-primary" id="itemContainer_{{$row}}">
-  <div class="card-header">
-    <h3 class="card-title">Form Barang {{$row}}</h3>
+<div class="card card-primary @if(\Session::has('method') && \Session::get('method') == 'order') card-tabs @endif" id="itemContainer_{{$row}}">
+  <div class="card-header @if(\Session::has('method') && \Session::get('method') == 'order') p-0 p @endif">
+    @if(\Session::has('method') && \Session::get('method') == 'order')
+      <ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
+        <li class="pt-2 px-3"><h3 class="card-title">Form Barang {{$row}}</h3></li>
+        <li class="nav-item">
+          <a class="nav-link bg-custom-blue active" id="tab-{{$row}}-model-tab" data-toggle="pill" href="#tab-{{$row}}-model" role="tab" aria-controls="tab-{{$row}}-model" aria-selected="true">
+            Model
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link bg-custom-blue" id="tab-{{$row}}-price-tab" data-toggle="pill" href="#tab-{{$row}}-price" role="tab" aria-controls="tab-{{$row}}-price" aria-selected="false">
+            Harga
+          </a>
+        </li>
+      </ul>
+    @else
+      <h3 class="card-title">Form Barang {{$row}}</h3>
+    @endif
   </div>
   <!-- /.card-header -->
   <!-- form start -->
   <div class="card-body">
+    @if(\Session::has('method') && \Session::get('method') == 'order')
+      <div class="tab-content" id="tab-{{$row}}-content">
+        <div class="tab-pane fade show active" id="tab-{{$row}}-model" role="tabpanel" aria-labelledby="custom-tabs-two-model-tab">
+    @endif
     <div class="row">
       <div class="col-12">
         <div class="form-group">
@@ -35,7 +55,7 @@
           </select>
         </div>
         <div class="row">
-          <div class="col-7">
+          <div class="col-5">
             <div class="form-group">
               <label for="itemMat_{{$row}}">Bahan</label>
               <select class="select2 form-control" name="material_{{$row}}" id="itemMat_{{$row}}">
@@ -57,57 +77,221 @@
               </select>
             </div>
           </div>
+          @if(\Session::has('method') && \Session::get('method') == 'production')
+            <div class="col-2">
+              <div class="form-group" id="qty_{{ $row }}">
+                <label for="">Quantity</label>
+                <input type="number" name="qty_{{ $row }}" class="form-control" value="1", min="1" id="qty_{{ $row }}">
+              </div>
+            </div>
+          @endif
           <div class="col-2">
-            <div class="form-group">
+            <div class="form-group" id="pet_{{ $row }}" style="display:none">
               <label for="">Pet</label>
-              <input type="checkbox" name="pet" class="form-control icheck">
+              <input type="checkbox" name="pet_{{ $row }}" class="form-control" id="petChk_{{ $row }}">
             </div>
           </div>
         </div>
-        {{-- <div class="row">
-          <div class="col-8">
-            <div class="form-group">
-              <label for="itemPet_{{$row}}">Pet</label>
-              <div class="row">
-                <div class="col-6">
-                  <div class="icheck-primary d-inline">
-                    <input type="radio" value="1" class="icheck" id="pet1"name="pet">
-                    <label style="font-weight:500;" for="pet2">Non Pet</label>
+        @if(\Session::has('method') && \Session::get('method') == 'order')
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group" id="sizeContainer-{{$row}}">
+                <label>Ukuran</label>
+                {{-- <input type="radio" name="" value=""> --}}
+                <div class="row">
+                  <div class="col-3">
+                    <div class="icheck_{{$row}}-primary d-inline">
+                      <input type="radio" value="S" class="icheck_{{$row}}" name="size_{{$row}}" id="size_s_{{$row}}">
+                      <label>S</label>
+                    </div>
                   </div>
-                </div>
-                <div class="col-6">
-                  <div class="icheck-primary d-inline">
-                    <input type="radio" value="2" class="icheck" id="pet2"name="pet">
-                    <label style="font-weight:500;" for="pet2">Dengan Pet</label>
+                  <div class="col-3">
+                    <div class="icheck_{{$row}}-primary d-inline">
+                      <input type="radio" value="M" class="icheck_{{$row}}" name="size_{{$row}}">
+                      <label>M</label>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icheck_{{$row}}-primary d-inline">
+                      <input type="radio" value="L" class="icheck_{{$row}}" name="size_{{$row}}">
+                      <label>L</label>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icheck_{{$row}}-primary d-inline">
+                      <input type="radio" value="XXL" class="icheck_{{$row}}" name="size_{{$row}}">
+                      <label>XL</label>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icheck_{{$row}}-primary d-inline">
+                      <input type="radio" value="XXL" class="icheck_{{$row}}" name="size_{{$row}}">
+                      <label>XXL</label>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="icheck_{{$row}}-primary d-inline">
+                      <input type="radio" value="XXXL" class="icheck_{{$row}}" name="size_{{$row}}">
+                      <label>XXXL</label>
+                    </div>
                   </div>
                 </div>
               </div>
-              <select class="select2 form-control" name="material_{{$row}}" id="itemMat_{{$row}}">
-                <option selected disabled>pilih jenis bahan...</option>
-                @foreach ($materials as $mat)
-                  <option value="{{$mat->id}}">{{$mat->name}}</option>
-                @endforeach
-              </select>
             </div>
           </div>
-        </div> --}}
+        @endif
       </div>
     </div>
+    @if(\Session::has('method') && \Session::get('method') == 'order')
+      </div>
+      <div class="tab-pane fade" id="tab-{{$row}}-price" role="tabpanel" aria-labelledby="custom-tabs-two-price-tab">
+
+        <div class="row">
+          <div class="col-7">
+            <div class="form-group">
+              <label>Harga Satuan</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Rp.</span>
+                </div>
+                <input type="number" class="form-control phone price" value="" min="0" data-previousValue="0" id="price_{{$row}}" data-row="{{$row}}">
+                <div class="input-group-append">
+                  <span class="input-group-text">,-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-5">
+            <div class="form-group">
+              <label>Banyaknya Barang</label>
+              <div class="input-group qtyGroup">
+                <input type="number" id="qty_{{$row}}" class="form-control qty" data-previousValue="1" min="1" value="1" data-row="{{$row}}" name="qty_{{ $row }}">
+                <div class="input-group-append">
+                  <span class="input-group-text">Buah</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="form-group">
+              <label>Subtotal</label>
+              <p class="lead" id="subtotalCol_{{$row}}">-</p>
+              <input type="hidden" name="subtotal_{{$row}}" id="subtotal_{{$row}}" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    @endif
   </div>
   <div class="card-footer" id="footer_{{$row}}">
     @if ($row > 1)
-      <button type="button" class="btn btn-danger" id="removeItem"><i class="fa fa-minus"></i></button>
+      <button type="button" class="btn btn-danger" id="removeItem"><i class="fa fa-minus"></i> Hapus Barang</button>
     @endif
-    <button type="button" class="btn btn-info" id="addNewItem"><i class="fa fa-plus"></i></button>
-    <button type="submit" class="btn btn-success" id="submitProductionOrder" >Submit</button>
+    <button type="button" class="btn btn-info" id="addNewItem"><i class="fa fa-plus"></i> Tambah Barang</button>
+    <button type="submit" class="btn btn-success" id="submitProductionOrder" ><i class="fa fa-check"></i> Selesai</button>
   </div>
 </div>
 <script type="text/javascript">
-$(".select2").select2();
-// $('.icheck').iCheck({
-//   checkboxClass: 'icheckbox_square-blue',
-//   radioClass: 'iradio_square-blue',
-//   increaseArea: '20%' // optional
-// });
+$(document).ready(function() {
+  $(".select2").select2();
+  $("#itemModel-{{ $row }}").change(function() {
+    var $option = $('option:selected', this); // get selected option
+    var optGroup = $option.closest('optgroup').index(); // get which optgroup
+    if(optGroup == 2){
+      $("#pet_{{ $row }}").show();
+    }
+    else {
+      $("#pet_{{ $row }}").hide();
+      $("#petChk_{{ $row }}").prop('checked',false);
+    }
+  });
+  $('.icheck_{{$row}}').iCheck({
+    checkboxClass: 'icheckbox_square-blue',
+    radioClass: 'iradio_square-blue',
+    increaseArea: '20%' // optional
+  });
+  var current_row = {{$row}};
 
+  $("#qty_{{$row}}").bind('keyup change click', function (e)
+  {
+    if (! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val())
+    {
+        if (parseInt($(this).val()) > 1)
+        {
+          if ($("#customSizing_{{$row}}").prop('checked') == true) {
+            Swal.fire("Data Lebih dari 1","Jumlah barang lebih dari 1, maka ukuran tidak bisa custom","warning");
+            $("#customSizing_{{$row}}").iCheck('uncheck');
+
+          }
+          if ($(this).val() < 1)
+          {
+              $(this).val('1');
+          }
+          $("#custom_sizing_button_{{$row}}").hide();
+        }
+        else if(parseInt($(this).val()) == 1)
+        {
+          $("#custom_sizing_button_{{$row}}").show();
+        }
+        countPrice{{$row}}();
+    }
+    $(this).data("previousValue", $(this).val());
+  });
+  $("#price_{{$row}}").bind('keyup change click', function (e)
+  {
+    if (! $(this).data("previousValue") || $(this).data("previousValue") != $(this).val())
+    {
+      countPrice{{$row}}();
+    }
+    $(this).data("previousValue", $(this).val());
+  });
+  function countPrice{{$row}}()
+  {
+      var rows = $("#countItems").val();
+      var total = parseInt($("#base_price").val());
+      var old_subtotal = parseInt($("#subtotal_{{$row}}").val());
+      var price = $("#price_{{$row}}").val();
+      if (price == null)
+      {
+          price =0;
+      }
+      else {
+        parseInt(price);
+      }
+      var sum = price * parseInt($("#qty_{{$row}}").val());
+      var grandTotal = parseInt(total) - old_subtotal + parseInt(sum);
+
+      // alert("old total : "+ total+". sum : "+sum+ ". new total : "+grandTotal);
+      $("#subtotalCol_{{$row}}").text("Rp. "+sum+",-");
+      $("#subtotal_{{$row}}").val(sum);
+
+      $("#base_price").val(grandTotal);
+  }
+  $("#customSizing_{{ $row }}").on('ifChanged', function(event)
+  {
+      var _this = $(this);
+      if(_this.is(':checked'))
+      {
+          $('.custom-chk').addClass('active');
+          $("#customSizeCard_{{$row}}").slideDown();
+      }
+      else
+      {
+          $('.custom-chk').removeClass('active');
+          $("#customSizeCard_{{$row}} :input").val("");
+          $("#customSizeCard_{{$row}}").slideUp();
+      }
+  });
+  $("#removeItem").on('click',function()
+  {
+      var sub = parseInt($("#subtotal_{{$row}}").val());
+      var total = parseInt($("#base_price").val());
+      var sum = total - sub;
+
+      $("#base_price").val(sum);
+  })
+});
 </script>

@@ -36,11 +36,14 @@
                         @endif
                       {{-- <td>{{$d->handler_name}}</td> --}}
                       @switch($d->kind)
-                        @case('new')
+                        @case('PR')
                         <td><span class="badge badge-primary">Jahit Baru</span></td>
                         @break
-                        @case('resew')
+                        @case('VR')
                         <td><span class="badge badge-info">Vermak</span></td>
+                        @break
+                        @case('SM')
+                        <td><span class="badge bg-orange">Sample</span></td>
                         @break
                       @endswitch
                       @switch($d->status)

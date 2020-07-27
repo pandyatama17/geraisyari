@@ -15,12 +15,17 @@
                 <thead>
                 <tr>
                   <th>No. Pesanan</th>
-                  <th>Jenis Jahit</th>
+                  <th>Jenis Pesanan</th>
                   {{-- <th>Jenis Pesanan</th> --}}
-                  <th>Status</th>
-                  <th>Agen / Klien</th>
-                  {{-- <th>No. Telp</th>
-                  <th>Catatan</th> --}}
+                  <th>Status Pembayaran</th>
+                  <th class="none">Status Produksi</th>
+                  <th class="none">Agen / Klien : </th>
+                  <th class="none">Nama : </th>
+                  <th class="none">No. Telp : </th>
+                  <th class="none">Catatan : </th>
+                  <th class="none">Tgl. Pemesanan : </th>
+                  <th class="none">Tgl. Pelunasan : </th>
+                  <th class="none">Tagihan : </th>
                   <th>Tindakan</th>
                 </tr>
                 </thead>
@@ -28,16 +33,44 @@
                   @foreach($data as $d)
                     @if ($d->id > 0)
                       <tr>
-                        <td>{{$d->code}}</td>
+                        <td class="slashed">{{$d->code}}</td>
                         @switch($d->kind)
-                          @case('new')
-                          <td><span class="badge badge-primary">Jahit Baru</span></td>
+                          @case('OR')
+                          <td>Pemesanan Dari Stok&nbsp;<span class="badge text-white bg-purple">OR</span></td>
                           @break
-                          @case('resew')
-                          <td><span class="badge badge-info">Vermak</span></td>
+                          @case('PO')
+                          <td>Jahit Baru&nbsp;<span class="badge badge-primary">PO</span></td>
+                          @break
+                          @case('OV')
+                          <td>Vermak&nbsp;<span class="badge text-white bg-orange">OV</span></td>
                           @break
                         @endswitch
-                        @switch($d->status)
+                        @switch(\DB::table('pricing_and_payments')->where('order_id',$d->id)->pluck('payment_status')[0])
+                          @case(0)
+                              <td><span class="badge badge-danger text-white">Belum Dibayar</span></td>
+                              @break
+                          @case(1)
+                              <td>
+                                <span class="badge bg-purple text-white">DP</span>
+                                &nbsp;@rupiah(\DB::table('pricing_and_payments')->where('order_id',$d->id)->pluck('down_payment')[0])
+                              </td>
+                              @break
+                          @case(2)
+                              <td class="text-center">
+                                <span class="badge bg-purple text-white">DP</span>
+                                <i class="fa fa-plus"></i>
+                                <span class="badge bg-primary text-white">Pembayaran</span>
+                                <br>
+                                &nbsp;@rupiah(\DB::table('pricing_and_payments')->where('order_id',$d->id)->pluck('down_payment')[0])
+                                <i class="fa fa-plus"></i>
+                                &nbsp;@rupiah(\DB::table('pricing_and_payments')->where('order_id',$d->id)->pluck('paid')[0])
+                              </td>
+                              @break
+                          @case(3)
+                              <td><span class="badge badge-success text-white">Lunas</span></td>
+                              @break
+                        @endswitch
+                        @switch($d->production_status)
                           @case(0)
                               <td><span class="badge badge-danger text-white">Belum Diproduksi</span></td>
                               @break
@@ -53,21 +86,24 @@
                           @default
                           <td></td>
                         @endswitch
-                        <td>
+                        {{-- <td> --}}
                           @if ($d->reseller == 1)
-                              <span class="badge badge-warning">Agen</span>
-                            {{-- <td>{{$d->reseller_name}}</td>
-                            <td>{{$d->reseller_phone}}</td> --}}
+                              <td><span class="badge badge-warning">Agen</span></td>
+                            <td>{{$d->reseller_name}}</td>
+                            <td>{{$d->reseller_phone}}</td>
                           @else
-                              <span class="badge badge-info">Perseorangan</span>
-                            {{-- <td>{{$d->client_name}}</td>
-                            <td>{{$d->client_phone}}</td> --}}
+                              <td><span class="badge badge-info">Perseorangan</span></td>
+                            <td>{{$d->client_name}}</td>
+                            <td>{{$d->client_phone}}</td>
                           @endif
-                          <button class="btn btn-link size-details" data-toggle="modal" data-url="{{ route('order_client_details',['id'=>$d->id])}}">
+                          <td>{{$d->notes}}</td>
+                          <td>{{$d->order_date}}</td>
+                          <td>{{$d->order_finished}}</td>
+                          <td>@rupiah(\DB::table('pricing_and_payments')->where('order_id',$d->id)->pluck('base_price')[0])</td>
+                          {{-- <button class="btn btn-link size-details" data-toggle="modal" data-url="{{ route('order_client_details',['id'=>$d->id])}}">
                             <i class="fa fa-eye"></i>
-                          </button>
-                        </td>
-                        {{-- <td>{{$d->notes}}</td> --}}
+                          </button> --}}
+                        {{-- </td> --}}
                         <td>
                           <a href="#"  class="text-warning">
                             <i class="fa fa-search" data-toggle="tooltip" title="Lihat Detail Pemesanan"></i>
@@ -93,12 +129,17 @@
                 <tfoot>
                 <tr>
                   <th>No. Pesanan</th>
-                  <th>Jenis Jahit</th>
+                  <th>Jenis Pesanan</th>
                   {{-- <th>Jenis Pesanan</th> --}}
-                  <th>Status</th>
-                  <th>Agen / Klien</th>
-                  {{-- <th>Catatan</th>
-                  <th>No. Telp</th> --}}
+                  <th>Status Pembayaran</th>
+                  <th class="none">Status Produksi</th>
+                  <th class="none">Agen / Klien : </th>
+                  <th class="none">Nama : </th>
+                  <th class="none">No. Telp : </th>
+                  <th class="none">Catatan : </th>
+                  <th class="none">Tgl. Pemesanan : </th>
+                  <th class="none">Tgl. Pelunasan : </th>
+                  <th class="none">Tagihan : </th>
                   <th>Tindakan</th>
                 </tr>
                 </tfoot>

@@ -19,7 +19,7 @@
                   <th>Bahan</th>
                   <th>Warna</th>
                   <th>Ukuran</th>
-                  {{-- <th>Banyaknya Barang</th> --}}
+                  <th>Quantity</th>
                   <th>Catatan</th>
                   <th>Tindakan</th>
                 </tr>
@@ -28,7 +28,7 @@
                   @foreach($store_inventory as $si)
 
                   <tr>
-                      <td>{{$si->production_code}}</td>
+                      <td class="slashed">{{$si->production_code}}</td>
                       <td>
                         {{$si->model}}
                         @if($si->niqab == 1)
@@ -50,7 +50,7 @@
                           {{$si->size}}
                         @endif
                       </td>
-                      {{-- <td>{{$si->quantity}}</td> --}}
+                      <td>{{$si->quantity}}</td>
                       <td>
                         @if($si->notes != null)
                           {{$si->notes}}
@@ -80,7 +80,7 @@
                   <th>Bahan</th>
                   <th>Warna</th>
                   <th>Ukuran</th>
-                  {{-- <th>Banyaknya Barang</th> --}}
+                  <th>Quantity</th>
                   <th>Catatan</th>
                   <th>Tindakan</th>
                 </tr>

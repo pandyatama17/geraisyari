@@ -22,7 +22,7 @@
                     <select class="form-control" name="prod_type" id="typeSelect">
                       <option selected disabled value="0">pilih tujuan produksi...</option>
                       <option value="1">Produksi atas Pemesanan</option>
-                      <option value="2">Produksi Stok Gudang</option>
+                      <option value="2">Produksi Stok Toko</option>
                     </select>
                   </div>
                   <div id="prodByOrder" style="display:none">
@@ -36,12 +36,40 @@
                       </select>
                     </div>
                   </div>
+                  {{-- <div id="storeSelectContainer" style="display:none">
+                    <div class="form-group">
+                      <label for="storeSelect">Toko</label>
+                      <select class="form-control" name="order" id="storeSelect">
+                        <option selected disabled value="0">pilih toko...</option>
+                        <option value="1">Toko Bekasi</option>
+                        <option value="2">Toko BSD</option>
+                      </select>
+                    </div>
+                  </div> --}}
+                  <div class="form-group" id="storeSelectContainer" style="display:none">
+                    <label>Toko</label>
+                    {{-- <input type="radio" name="" value=""> --}}
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="icheck-primary d-inline">
+                          <input type="radio" value="1" class="icheck" name="store_id" id="storeRadio_1">
+                          <label for="storeRadio_1"><p class="lead">Toko Bekasi</p></label>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="icheck-primary d-inline">
+                          <input type="radio" value="2" class="icheck" name="store_id" id="storeRadio_2">
+                          <label for="storeRadio_2"><p class="lead">Toko BSD</p></label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div class="form-group" id="kindContainer">
                     <label for="kind">Jenis Produksi</label>
                     <select class="form-control" name="kind" id="kindSelect">
                       <option selected disabled value="0">pilih jenis produksi...</option>
-                      <option value="new">Jahit Baru (PR)</option>
-                      <option value="resew">Vermak (VR)</option>
+                      <option value="PR">Jahit Baru (PR)</option>
+                      <option value="VR">Vermak (VR)</option>
                     </select>
                   </div>
                   <div class="form-group">
@@ -87,25 +115,19 @@
                           </label>
                         </div>
                       </div>
-                      <div class="col-3">
+                      <div class="col-4">
                         <div class="icheck-primary d-inline">
                           <input type="radio" value="XXXL" class="icheck" id="radioPrimary6" name="size">
                           <label for="radioPrimary6">XXXL
                           </label>
                         </div>
                       </div>
-                      <div class="col-4 md-offset-1 custom-chk">
+                      <div class="col-4 col-md-offset-1 custom-chk">
                         <div class="icheck-primary d-inline">
                           <input type="checkbox" value="1" class="icheck" id="radioPrimary7" name="custom_sizing">
                           <label for="radioPrimary7">Custom
                           </label>
                         </div>
-                      </div>
-                    </div>
-                    <div class="form-group" id="sizeContainer" style="display:none">
-                      <label>Ukuran</label>
-                      {{-- <input type="radio" name="" value=""> --}}
-                      <div class="row">
                       </div>
                     </div>
                   </div>

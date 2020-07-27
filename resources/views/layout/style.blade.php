@@ -48,9 +48,46 @@
 {
   background-color: #2283c3;
 }
-.phone::-webkit-inner-spin-button, 
-.phone::-webkit-outer-spin-button { 
+.custom-chk.active:hover
+{
+  background-color: #1a6698;
+}
+.phone::-webkit-inner-spin-button,
+.phone::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+.bg-custom-blue
+{
+  background-color: #215FA3;
+  border-bottom: 1px solid white !important;
+}
+.bg-custom-blue:hover
+{
+  background-color: #1A4C82;
+  transition: .5s!important;
+}
+.bg-custom-blue .active
+{
+  background-color: #113153;
+  border-bottom: 1px solid white !important;
+}
+@font-face {
+  font-family: 'Roboto Mono';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Mono'), url('{{asset('Roboto_Mono/static/RobotoMono-Regular.ttf')}}');
+}
+td.slashed{
+	font-family: 'Roboto Mono', sans-serif!important;
+	-webkit-font-feature-settings: "zero"!important;
+	-moz-font-feature-settings: "zero=1"!important;
+	-moz-font-feature-settings: "zero"!important;
+	-ms-font-feature-settings: "zero"!important;
+	-o-font-feature-settings: "zero"!important;
+	font-feature-settings: "zero"!important;
+  -webkit-font-feature-settings: "ss01", "ss02", "ss03", "ss04";
+  font-feature-settings: "ss01", "ss02", "ss03", "ss04";
+	font-variant: slashed-zero!important;
 }
 </style>

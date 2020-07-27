@@ -93,15 +93,44 @@
              with font-awesome or any other icon font library -->
         @if (Auth::user()->level == "owner" || Auth::user()->level == "admin" )
           <li class="nav-header">Toko</li>
-          <li class="nav-item">
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fa fa-city text-success"></i>
+              <p>
+                  Stok Toko
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{route('store_inventory')}}" class="nav-link">
+                  <i class="fa fa-copy nav-icon"></i>
+                  <p>Semua Data</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('store_inventory')}}" class="nav-link">
+                  <i class="fa fa-store-alt nav-icon"></i>
+                  <p>Toko Bekasi</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{route('store_inventory')}}" class="nav-link">
+                  <i class="fa fa-store nav-icon"></i>
+                  <p>Toko BSD</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          {{-- <li class="nav-item">
             <a href="{{route('store_inventory')}}" class="nav-link">
               <i class="fa fa-tshirt nav-icon text-success"></i>
               <p>Stok Toko</p>
             </a>
-          </li>
+          </li>--}}
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-archive"></i>
+              <i class="nav-icon fas fa-archive text-info"></i>
               <p>
                 Pemesanan (PO)
                 <i class="right fas fa-angle-left"></i>
@@ -138,12 +167,6 @@
 
                 </ul> --}}
               </li>
-              <li class="nav-item">
-                <a href="{!! route('new_order') !!}" class="nav-link">
-                  <i class="fa fa-plus nav-icon text-primary"></i>
-                  <p>Pemesanan Baru</p>
-                </a>
-              </li>
               {{-- <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="fa fa-check nav-icon"></i>
@@ -151,6 +174,12 @@
                 </a>
               </li> --}}
             </ul>
+          </li>
+          <li class="nav-item">
+            <a href="{!! route('new_order') !!}" class="nav-link">
+              <i class="fa fa-cart-plus nav-icon text-primary"></i>
+              <p>Pemesanan Baru</p>
+            </a>
           </li>
           {{-- <li class="nav-item">
             <a href="https://adminlte.io/docs/3.0" class="nav-link">
@@ -192,34 +221,23 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                  <i class="fa fa-book nav-icon text-cyan"></i>
-                  <p>
-                    Data Produksi
-                    <i class="right fas fa-angle-left"></i>
-                  </p>
+              <li class="nav-item">
+                <a href="{{route('show_productions')}}" class="nav-link">
+                  <i class="fa fa-copy nav-icon"></i>
+                  <p>Semua Produksi</p>
                 </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{route('show_productions')}}" class="nav-link">
-                      <i class="fa fa-copy nav-icon"></i>
-                      <p>Semua Produksi</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-hourglass nav-icon text-info"></i>
-                      <p>Sedang Berlangsung</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="far fa-copy nav-icon text-success"></i>
-                      <p>Telah Selesai</p>
-                    </a>
-                  </li>
-                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-hourglass nav-icon text-info"></i>
+                  <p>Sedang Berlangsung</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="far fa-copy nav-icon text-success"></i>
+                  <p>Telah Selesai</p>
+                </a>
               </li>
             </ul>
           </li>

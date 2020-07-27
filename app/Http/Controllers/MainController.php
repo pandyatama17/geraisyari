@@ -15,7 +15,12 @@ use App\AvailableColors;
 use App\Tailor;
 use App\User;
 use App\Reseller;
+use App\Pricing;
+use App\PricingDetail;
 
+use Auth;
+
+use Session;
 use Carbon\Carbon;
 
 class MainController extends Controller
@@ -121,7 +126,7 @@ class MainController extends Controller
                 ->leftJoin('materials as mat', 'od.material_id', '=', 'mat.id')
                 ->leftJoin('material_colors as mc', 'od.color', '=', 'mc.id')
                 ->leftJoin('productions as p', 'od.parent_id', '=', 'p.order_id')
-                ->leftJoin('sizings as s', 'p.id','=','s.parent_id')
+                ->leftJoin('sizings as s', 'od.id','=','s.parent_id')
                 ->select('od.*','mod.name as model','mod.kind as kind','mat.name as material','mc.color as color','s.*','od.id as id','od.parent_id as parent_id')
                 ->get();
 
@@ -143,8 +148,8 @@ class MainController extends Controller
             ->leftJoin('models as mod', 'si.model_id', '=', 'mod.id')
             ->leftJoin('materials as mat', 'si.material_id', '=', 'mat.id')
             ->leftJoin('material_colors as mc', 'si.color', '=', 'mc.id')
-            ->leftJoin('sizings as s', 'si.production_id', '=', 's.parent_id')
-            ->select('si.*','mod.name as model','mod.kind as kind','mat.name as material','mc.color as color','s.*')
+            ->leftJoin('sizings as s', 'si.id', '=', 's.parent_id')
+            ->select('s.*','si.*','si.production_id as parent_id','mod.name as model','mod.kind as kind','mat.name as material','mc.color as color')
             ->get();
 
             $type = $prod->order_id;
@@ -189,7 +194,22 @@ class MainController extends Controller
     $models = Models::all();
     $materials = Material::all();
     $colors = AvailableColors::all();
+    Session::flash('method','production');
 
+    return view('layout.itemform')
+    ->with('orders', $orders)
+    ->with('models', $models)
+    ->with('colors', $colors)
+    ->with('materials', $materials)
+    ->with('row', $row);
+  }
+  public function storeItemForm($row)
+  {
+    $orders = Order::where('id', '>', 0)->get();
+    $models = Models::all();
+    $materials = Material::all();
+    $colors = AvailableColors::all();
+    Session::flash('method','order');
     return view('layout.itemform')
     ->with('orders', $orders)
     ->with('models', $models)
@@ -221,19 +241,22 @@ class MainController extends Controller
   }
   public function saveProduction(Request $r)
   {
-    // dd($r);
+    // dd($r->all());
     $action = $r->prod_type;
-    $latest = Production::orderBy('id', 'DESC')->first();
-    switch ($r->prod_kind)
-    {
-      case 'new':
-        $kind = 'PR';
-        break;
-      case 'resew':
-        $kind = 'VR';
-        break;
-    }
-    $generated = $kind.sprintf("%04d", ($latest->id+1));
+    // $latest = Production::orderBy('id', 'DESC')->first();
+    // switch ($r->prod_kind)
+    // {
+    //   case 'PR':
+    //     $kind = 'PR';
+    //     break;
+    //   case 'VR':
+    //     $kind = 'VR';
+    //     break;
+    // }
+    $kind = $r->prod_kind;
+    $count = Order::where('kind', $kind)->count() + 1;
+    // $generated = $kind.sprintf("%04d", ($latest->id+1));
+    $generated = $kind.sprintf("%04d", ($count + 1));
     switch ($action)
     {
       case 1:
@@ -242,11 +265,11 @@ class MainController extends Controller
         $p = New Production;
         $p->code = $generated;
         $p->order_id = $o->id;
-        $p->kind = $o->kind;
+        $p->kind = $kind;
         $p->status = '0';
         $p->pic = $o->pic;
         $p->notes = $r->notes;
-        $o->status = '1';
+        $o->production_status = '1';
 
         try
         {
@@ -256,7 +279,7 @@ class MainController extends Controller
         }
         catch (\Exception $e)
         {
-          $arr = ["error"=>true, "message"=>$e->getMessage(), "redirect"=>route("show_po",$p->id)];
+          $arr = ["error"=>true, "message"=>$e->getMessage()];
         }
         echo json_encode($arr);
         // return $o;
@@ -266,7 +289,7 @@ class MainController extends Controller
         $p = New Production;
         $p->code = $generated;
         $p->order_id = 0;
-        $p->kind = $r->kind;
+        $p->kind = $kind;
         $p->status = '0';
         $p->pic = 1;
         $p->notes = $r->notes;
@@ -283,37 +306,6 @@ class MainController extends Controller
           $messages['prod']="failed".$e->getMessage();
         }
 
-        if ($r->custom_sizing == 1)
-        {
-            $cs = new Sizing;
-            $cs->parent_id = $p->id;
-            $cs->dress_length = $r->dress_length;
-            $cs->hijab_length = $r->hijab_length;
-            $cs->face_width = $r->face_width;
-            $cs->neck_width = $r->neck_width;
-            $cs->waist_width = $r->waist_width;
-            $cs->breast_width = $r->breast_width;
-            $cs->hip_width = $r->hip_width;
-            $cs->brisket_width = $r->brisket_width;
-            $cs->brisket_length = $r->brisket_length;
-            $cs->shoulder_width = $r->shoulder_width;
-            $cs->armpit_width = $r->armpit_width;
-            $cs->arm_length = $r->arm_length;
-            $cs->arm_width = $r->arm_width;
-            $cs->elbow_width = $r->elbow_width;
-            $cs->wrist_width = $r->wrist_width;
-
-            try
-            {
-              $cs->save();
-              $messages['custom sizing']= "saved";
-            }
-            catch (\Exception $e)
-            {
-              $errMessage['sizing_error'] = $e;
-              $messages['custom sizing']= "failed";
-            }
-        }
         for ($i=0; $i < $r->rows; $i++)
         {
             $currentRow = $i+1;
@@ -323,6 +315,7 @@ class MainController extends Controller
             $si->model_id = $model->id;
             $si->material_id = $r->input("material_".$currentRow);
             $si->color = $r->input("color_".$currentRow);
+            $si->quantity = $r->input("qty_".$currentRow);
             $si->size = $r->size;
             if ($r->pet == "on") {
               $si->pet = 1;
@@ -338,6 +331,37 @@ class MainController extends Controller
             try
             {
               $si->save();
+              if ($r->custom_sizing == 1)
+              {
+                  $cs = new Sizing;
+                  $cs->parent_id = $si->id;
+                  $cs->dress_length = $r->dress_length;
+                  $cs->hijab_length = $r->hijab_length;
+                  $cs->face_width = $r->face_width;
+                  $cs->neck_width = $r->neck_width;
+                  $cs->waist_width = $r->waist_width;
+                  $cs->breast_width = $r->breast_width;
+                  $cs->hip_width = $r->hip_width;
+                  $cs->brisket_width = $r->brisket_width;
+                  $cs->brisket_length = $r->brisket_length;
+                  $cs->shoulder_width = $r->shoulder_width;
+                  $cs->armpit_width = $r->armpit_width;
+                  $cs->arm_length = $r->arm_length;
+                  $cs->arm_width = $r->arm_width;
+                  $cs->elbow_width = $r->elbow_width;
+                  $cs->wrist_width = $r->wrist_width;
+
+                  try
+                  {
+                    $cs->save();
+                    $messages['custom sizing']= "saved";
+                  }
+                  catch (\Exception $e)
+                  {
+                    $errMessage['sizing_error'] = $e;
+                    $messages['custom sizing']= "failed";
+                  }
+              }
               $messages['item-'.$currentRow]="saved";
             }
             catch (\Exception $e)
@@ -391,7 +415,7 @@ class MainController extends Controller
               ->leftJoin('materials as mat', 'od.material_id', '=', 'mat.id')
               ->leftJoin('material_colors as mc', 'od.color', '=', 'mc.id')
               ->leftJoin('productions as p', 'od.parent_id', '=', 'p.order_id')
-              ->leftJoin('sizings as s', 'p.id','=','s.parent_id')
+              ->leftJoin('sizings as s', 'od.id','=','s.parent_id')
               ->select('od.*','mod.name as model','mod.kind as kind','mat.name as material','mc.color as color','s.*','od.id as id','od.parent_id as parent_id')
               ->get();
 
@@ -413,7 +437,7 @@ class MainController extends Controller
           ->leftJoin('models as mod', 'si.model_id', '=', 'mod.id')
           ->leftJoin('materials as mat', 'si.material_id', '=', 'mat.id')
           ->leftJoin('material_colors as mc', 'si.color', '=', 'mc.id')
-          ->leftJoin('sizings as s', 'si.production_id', '=', 's.parent_id')
+          ->leftJoin('sizings as s', 'si.id', '=', 's.parent_id')
           ->select('si.*','mod.name as model','mod.kind as kind','mat.name as material','mc.color as color','s.*')
           ->get();
 
@@ -549,8 +573,201 @@ class MainController extends Controller
   public function createOrder()
   {
     $rs = Reseller::all();
-    
+    Session::flash('method','order');
     return view('store.form')
     ->with('resellers', $rs);
+  }
+  public function orderFromStock()
+  {
+    $query = \DB::table('store_inventory as si')
+        ->leftJoin('productions as p', 'si.production_id', '=', 'p.id')
+        ->where('p.status',"=", '3')
+        ->leftJoin('models as mod', 'si.model_id', '=', 'mod.id')
+        ->leftJoin('materials as mat', 'si.material_id', '=', 'mat.id')
+        ->leftJoin('material_colors as mc', 'si.color', '=', 'mc.id')
+        ->select('si.*','mod.name as model','mat.name as material','mc.color as color','p.code as production_code')
+        ->get();
+
+    return view('layout.loadstoreinventory')
+    ->with('store_inventory', $query);
+  }
+
+  public function storeOrder(Request $r)
+  {
+    // dd($r->all());
+    $latest = Order::orderBy('id', 'DESC')->first();
+
+    $o = new Order;
+    $oldstock = 0;
+    switch ($r->order_kind) {
+      case '0':
+        // from store (OR)
+        $kind = "OR";
+        break;
+      case '1':
+        // new order (PO)
+        $kind = "PO";
+        break;
+      case '2':
+        // Vermack (OV)
+        $kind = "OV";
+        break;
+    }
+    $count = Order::where('kind', $kind)->count() + 1;
+
+    $o->code = $kind.sprintf("%04d", ($count));
+    $o->pic = Auth::user()->id;
+    $o->notes = $r->notes;
+    $o->kind = $kind;
+    $o->order_date = Carbon::now();
+    $p = new Pricing;
+    $p->base_price = $r->base_price;
+    if($r->down_payment!="")
+    {
+      $p->payment_status = '1';
+      $p->down_payment = $r->down_payment;
+      $p->paid = $r->down_payment;
+    }
+    else {
+      $p->payment_status = '0';
+    }
+
+    switch ($r->order_type) {
+      case '0':
+        $o->client_name = $r->client_name;
+        $o->client_phone = $r->client_phone;
+        break;
+      case '1':
+        $o->reseller = 1;
+        $o->reseller_id = $r->reseller_id;
+        break;
+    }
+    if ($r->order_kind == 0)
+    {
+      $o->production_status = '3';
+      // dd($r->all());
+      for ($i=1; $i < $r->rows+1; $i++)
+      {
+        $si = StoreInventory::find($r->input('item_'.$i));
+        $oldstock = $si->quantity;
+        $newstock = ($oldstock - $r->input('qty_'.$i));
+      }
+      try {
+        $o->save();
+        $p->order_id = $o->id;
+        $p->save();
+        if ($newstock == 0)
+        {
+          $si->delete();
+        }
+        else
+        {
+          $si->quantity = $newstock;
+          $si->save();
+        }
+        $messages['order']="saved";
+      }
+      catch (\Exception $e) {
+        return 'error '.$e->getMessage();
+      }
+      // return"belom jadi";
+    }
+    else
+    {
+      $o->production_status = '0';
+      if ($r->custom_sizing == 1)
+      {
+        $o->has_custom_sizing = $r->custom_sizing;
+      }
+      else {
+        $o->has_custom_sizing = 0;
+      }
+      try
+      {
+          $o->save();
+          $p->order_id = $o->id;
+          $p->save();
+          if ($r->custom_sizing == 1)
+          {
+              $cs = new Sizing;
+              $cs->parent_type = 'O';
+              $cs->parent_id = $o->id;
+              $cs->dress_length = $r->dress_length;
+              $cs->hijab_length = $r->hijab_length;
+              $cs->face_width = $r->face_width;
+              $cs->neck_width = $r->neck_width;
+              $cs->waist_width = $r->waist_width;
+              $cs->breast_width = $r->breast_width;
+              $cs->hip_width = $r->hip_width;
+              $cs->brisket_width = $r->brisket_width;
+              $cs->brisket_length = $r->brisket_length;
+              $cs->shoulder_width = $r->shoulder_width;
+              $cs->armpit_width = $r->armpit_width;
+              $cs->arm_length = $r->arm_length;
+              $cs->arm_width = $r->arm_width;
+              $cs->elbow_width = $r->elbow_width;
+              $cs->wrist_width = $r->wrist_width;
+              try
+              {
+                $cs->save();
+                $messages['custom sizing']= "saved";
+              }
+              catch (\Exception $e)
+              {
+                $o->delete();
+                $errMessage['sizing_error'] = $e;
+                $messages['custom sizing']= "failed";
+              }
+          }
+          $messages['order']="saved";
+      }
+      catch (\Exception $e) {
+          return 'error '.$e->getMessage();
+      }
+    }
+    for ($i=1; $i < $r->rows+1; $i++)
+    {
+      // $model = Models::find($r->input('model_'.$i));
+      $od = new OrderDetail;
+      $pd = new PricingDetail;
+
+      $od->parent_id = $o->id;
+      $od->model_id = $r->input("model_".$i);
+      $od->material_id = $r->input("material_".$i);
+      $od->color = $r->input("color_".$i);
+      $od->size = $r->input("size_".$i);
+      if ($r->input('pet_'.$i) == "on") {
+        $od->pet = 1;
+      }
+
+      $pd->parent_id = $p->id;
+      $pd->base_price = $r->input("subtotal_".$i);
+      try
+      {
+        $od->save();
+        $pd->order_details_id = $od->id;
+        $pd->save();
+      }
+      catch(\Exception $e)
+      {
+        OrderDetail::where('parent_id',$o->id)->delete();
+        PricingDetail::where('parent_id',$p->id)->delete();
+        $errMessage['item-'] = $e;
+        $messages['item-']="failed ".$e->getMessage();
+      }
+    }
+    if ($messages['order'] == 'saved')
+    {
+      $arr = ["error"=>false, "message"=>"pemesanan ".$o->code." Berhasil Dibuat!", "redirect"=>route("show_po",$o->id)];
+    }
+    else
+    {
+      OrderDetail::where('parent_id',$o->id)->delete();
+      PricingDetail::where('parent_id',$p->id)->delete();
+      $o->delete();
+      $p->delete();
+      $arr = ["error"=>true, "message"=>json_encode($errMessage), "redirect"=>route("new_order")];
+    }
+    echo json_encode($arr);
   }
 }
